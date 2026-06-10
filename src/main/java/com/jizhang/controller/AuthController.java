@@ -1,6 +1,8 @@
 package com.jizhang.controller;
 
 import com.jizhang.common.Result;
+import com.jizhang.dto.LoginRequest;
+import com.jizhang.dto.LoginResponse;
 import com.jizhang.dto.RegisterRequest;
 import com.jizhang.dto.RegisterResponse;
 import com.jizhang.service.UserService;
@@ -27,5 +29,12 @@ public class AuthController {
     public Result<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         RegisterResponse response = userService.register(request);
         return Result.success("注册成功", response);
+    }
+
+    @ApiOperation("用户登录")
+    @PostMapping("/login")
+    public Result<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = userService.login(request);
+        return Result.success("登录成功", response);
     }
 }

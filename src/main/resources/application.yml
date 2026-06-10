@@ -35,3 +35,7 @@ spring:
       hibernate.generate_statistics: false
       hibernate.cache.region.factory_class: org.hibernate.cache.jcache.internal.JCacheRegionFactory
       hibernate.cache.provider_configuration_file_resource_path: classpath:config/ehcache.xml
+
+jwt:
+  secret: ai-ledger-secret-key-must-be-at-least-256-bits-long-for-security
+  expiration: 86400000

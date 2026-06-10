@@ -16,6 +16,7 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(1002, "用户已存在"),
     PHONE_FORMAT_ERROR(1003, "手机号格式错误"),
     PASSWORD_ERROR(1004, "密码错误"),
+    INVALID_PASSWORD(1005, "密码错误"),
     
     TRANSACTION_NOT_FOUND(2001, "账单不存在"),
     
