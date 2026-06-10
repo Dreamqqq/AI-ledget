@@ -27,4 +27,13 @@ public interface ApiService {
 
     @GET("user/statistics")
     Call<ApiResponse<StatisticsResponse>> getStatistics();
+
+    @POST("transactions")
+    Call<ApiResponse<Transaction>> createTransaction(@Body TransactionRequest request);
+
+    @PUT("transactions/{id}")
+    Call<ApiResponse<Transaction>> updateTransaction(@Path("id") Long id, @Body TransactionRequest request);
+
+    @DELETE("transactions/{id}")
+    Call<ApiResponse<Void>> deleteTransaction(@Path("id") Long id);
 }
