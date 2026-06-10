@@ -1,0 +1,37 @@
+# ?? ??
+# 配置项目端口
+server:
+  port: 8084
+
+
+spring:
+
+  #配置项目返回时间的json格式
+  jackson.date-format: yyyy-MM-dd HH:mm:ss
+  jackson.time-zone: GMT+8
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://rm-bp1ism34k2e0l5d8j2o.mysql.rds.aliyuncs.com/jizhang?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2b8
+    username: root
+    password: pjc16103
+    hikari:
+      maximum-pool-size: 100 #?????,???10.
+      minimum-idle: 10 #??????????10.
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database: MYSQL
+    show-sql: false
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.cache.use_query_cache: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.generate_statistics: false
+      hibernate.cache.region.factory_class: org.hibernate.cache.jcache.internal.JCacheRegionFactory
+      hibernate.cache.provider_configuration_file_resource_path: classpath:config/ehcache.xml
