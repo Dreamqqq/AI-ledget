@@ -1,9 +1,12 @@
 package com.jizhang.controller;
 
 import com.jizhang.common.Result;
+import com.jizhang.dto.OcrRequest;
+import com.jizhang.dto.OcrResponse;
 import com.jizhang.dto.TransactionListResponse;
 import com.jizhang.dto.TransactionRequest;
 import com.jizhang.dto.TransactionResponse;
+import com.jizhang.service.OcrService;
 import com.jizhang.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +24,7 @@ import javax.validation.Valid;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final OcrService ocrService;
 
     @Operation(summary = "创建账单")
     @PostMapping
@@ -62,5 +66,12 @@ public class TransactionController {
         Long userId = (Long) httpRequest.getAttribute("userId");
         transactionService.deleteTransaction(userId, id);
         return Result.success(null);
+    }
+
+    @Operation(summary = "图片识别接口")
+    @PostMapping("/ocr")
+    public Result<OcrResponse> recognizeReceipt(@Valid @RequestBody OcrRequest request) {
+        OcrResponse response = ocrService.recognizeReceipt(request.getImageUrl());
+        return Result.success(response);
     }
 }

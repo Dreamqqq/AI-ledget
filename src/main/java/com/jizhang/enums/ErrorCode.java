@@ -23,7 +23,10 @@ public enum ErrorCode {
     TRANSACTION_NOT_FOUND(2001, "账单不存在"),
     
     TOKEN_INVALID(3001, "Token无效"),
-    TOKEN_EXPIRED(3002, "Token已过期");
+    TOKEN_EXPIRED(3002, "Token已过期"),
+    
+    OCR_FAILED(4001, "图片识别失败"),
+    OCR_PARSE_FAILED(4002, "识别结果解析失败");
 
     private final int code;
     private final String message;

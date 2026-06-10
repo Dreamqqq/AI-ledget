@@ -46,3 +46,9 @@ oss:
   accessKeyId: your-access-key-id
   accessKeySecret: your-access-key-secret
   bucketName: your-bucket-name
+
+# OpenAI 配置
+openai:
+  apiKey: your-openai-api-key
+  model: gpt-4-vision-preview
+  apiUrl: https://api.openai.com/v1/chat/completions
