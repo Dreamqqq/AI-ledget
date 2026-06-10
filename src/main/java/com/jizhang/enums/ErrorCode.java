@@ -8,6 +8,8 @@ public enum ErrorCode {
     FAILED(500, "操作失败"),
     
     PARAM_ERROR(400, "参数错误"),
+    PARAMS_ERROR(400, "参数错误"),
+    SYSTEM_ERROR(500, "系统错误"),
     UNAUTHORIZED(401, "未授权"),
     FORBIDDEN(403, "禁止访问"),
     NOT_FOUND(404, "资源不存在"),
