@@ -1,0 +1,5 @@
+logging:
+  level:
+    com.jizhang: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
