@@ -1,6 +1,7 @@
 package com.jizhang.ledger.network;
 
 import com.jizhang.ledger.model.*;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.*;
 import java.util.List;
@@ -15,6 +16,9 @@ public interface ApiService {
 
     @GET("user/profile")
     Call<ApiResponse<User>> getProfile();
+
+    @PUT("user/profile")
+    Call<ApiResponse<User>> updateProfile(@Body User user);
 
     @GET("categories")
     Call<ApiResponse<Map<String, List<String>>>> getCategories();
@@ -36,4 +40,11 @@ public interface ApiService {
 
     @DELETE("transactions/{id}")
     Call<ApiResponse<Void>> deleteTransaction(@Path("id") Long id);
+
+    @Multipart
+    @POST("upload")
+    Call<ApiResponse<UploadResponse>> uploadImage(@Part MultipartBody.Part file);
+
+    @POST("transactions/ocr")
+    Call<ApiResponse<OcrResponse>> recognizeImage(@Body OcrRequest request);
 }

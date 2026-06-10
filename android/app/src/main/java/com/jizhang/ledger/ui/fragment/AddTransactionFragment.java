@@ -1,22 +1,31 @@
 package com.jizhang.ledger.ui.fragment;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.jizhang.ledger.R;
-import com.jizhang.ledger.model.Transaction;
-import com.jizhang.ledger.model.TransactionRequest;
+import com.jizhang.ledger.model.*;
 import com.jizhang.ledger.network.ApiResponse;
 import com.jizhang.ledger.network.RetrofitClient;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import java.io.File;
 import java.util.*;
 
 public class AddTransactionFragment extends Fragment {
@@ -24,10 +33,28 @@ public class AddTransactionFragment extends Fragment {
     private RadioButton rbExpense, rbIncome;
     private EditText etAmount, etRemark;
     private Spinner spinnerCategory;
-    private Button btnSelectDate, btnSubmit;
+    private Button btnSelectDate, btnSubmit, btnSelectImage;
+    private ProgressBar progressBar;
     private String selectedDate;
     private Map<String, List<String>> categories;
     private List<String> currentCategories = new ArrayList<>();
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                    Uri imageUri = result.getData().getData();
+                    if (imageUri != null) {
+                        uploadAndRecognizeImage(imageUri);
+                    }
+                }
+            }
+        );
+    }
 
     @Nullable
     @Override
@@ -42,6 +69,8 @@ public class AddTransactionFragment extends Fragment {
         spinnerCategory = view.findViewById(R.id.spinnerCategory);
         btnSelectDate = view.findViewById(R.id.btnSelectDate);
         btnSubmit = view.findViewById(R.id.btnSubmit);
+        btnSelectImage = view.findViewById(R.id.btnSelectImage);
+        progressBar = view.findViewById(R.id.progressBar);
 
         Calendar cal = Calendar.getInstance();
         selectedDate = String.format("%d-%02d-%02d", 
@@ -57,6 +86,8 @@ public class AddTransactionFragment extends Fragment {
         btnSelectDate.setOnClickListener(v -> showDatePicker());
 
         btnSubmit.setOnClickListener(v -> submitTransaction());
+
+        btnSelectImage.setOnClickListener(v -> selectImage());
 
         return view;
     }
@@ -160,5 +191,110 @@ public class AddTransactionFragment extends Fragment {
             cal.get(Calendar.MONTH) + 1, 
             cal.get(Calendar.DAY_OF_MONTH));
         btnSelectDate.setText(selectedDate);
+    }
+
+    private void selectImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
+    }
+
+    private void uploadAndRecognizeImage(Uri imageUri) {
+        progressBar.setVisibility(View.VISIBLE);
+        btnSelectImage.setEnabled(false);
+
+        String imagePath = getRealPathFromUri(imageUri);
+        if (imagePath == null) {
+            Toast.makeText(getContext(), "无法获取图片路径", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+            btnSelectImage.setEnabled(true);
+            return;
+        }
+
+        File imageFile = new File(imagePath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
+
+        RetrofitClient.getApiService().uploadImage(body).enqueue(new Callback<ApiResponse<UploadResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<UploadResponse>> call, Response<ApiResponse<UploadResponse>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    String imageUrl = response.body().getData().getImageUrl();
+                    recognizeImage(imageUrl);
+                } else {
+                    Toast.makeText(getContext(), "图片上传失败", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    btnSelectImage.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<UploadResponse>> call, Throwable t) {
+                Toast.makeText(getContext(), "上传失败: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                btnSelectImage.setEnabled(true);
+            }
+        });
+    }
+
+    private void recognizeImage(String imageUrl) {
+        OcrRequest request = new OcrRequest(imageUrl);
+        RetrofitClient.getApiService().recognizeImage(request).enqueue(new Callback<ApiResponse<OcrResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<OcrResponse>> call, Response<ApiResponse<OcrResponse>> response) {
+                progressBar.setVisibility(View.GONE);
+                btnSelectImage.setEnabled(true);
+
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    OcrResponse ocrData = response.body().getData();
+                    fillFormWithOcrData(ocrData);
+                    Toast.makeText(getContext(), "识别成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "图片识别失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<OcrResponse>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                btnSelectImage.setEnabled(true);
+                Toast.makeText(getContext(), "识别失败: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fillFormWithOcrData(OcrResponse ocrData) {
+        if (ocrData.getAmount() != null) {
+            etAmount.setText(String.valueOf(ocrData.getAmount()));
+        }
+        
+        if (ocrData.getDate() != null && !ocrData.getDate().isEmpty()) {
+            selectedDate = ocrData.getDate();
+            btnSelectDate.setText(selectedDate);
+        }
+        
+        if (ocrData.getCategory() != null && !ocrData.getCategory().isEmpty()) {
+            String category = ocrData.getCategory();
+            if (currentCategories != null && currentCategories.contains(category)) {
+                int position = currentCategories.indexOf(category);
+                spinnerCategory.setSelection(position);
+            }
+        }
+        
+        if (ocrData.getMerchant() != null && !ocrData.getMerchant().isEmpty()) {
+            etRemark.setText(ocrData.getMerchant());
+        }
+    }
+
+    private String getRealPathFromUri(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContext().getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(columnIndex);
+            cursor.close();
+            return path;
+        }
+        return null;
     }
 }

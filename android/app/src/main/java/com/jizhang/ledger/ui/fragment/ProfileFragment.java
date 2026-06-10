@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,6 +15,7 @@ import com.jizhang.ledger.model.StatisticsResponse;
 import com.jizhang.ledger.model.User;
 import com.jizhang.ledger.network.ApiResponse;
 import com.jizhang.ledger.network.RetrofitClient;
+import com.jizhang.ledger.ui.EditProfileActivity;
 import com.jizhang.ledger.ui.LoginActivity;
 import com.jizhang.ledger.utils.TokenManager;
 import retrofit2.Call;
@@ -24,7 +24,7 @@ import retrofit2.Response;
 
 public class ProfileFragment extends Fragment {
     private TextView tvUserName, tvUserPhone, tvTotalCount, tvTotalIncome, tvTotalExpense;
-    private Button btnLogout;
+    private Button btnLogout, btnEditProfile;
 
     @Nullable
     @Override
@@ -37,9 +37,14 @@ public class ProfileFragment extends Fragment {
         tvTotalIncome = view.findViewById(R.id.tvTotalIncome);
         tvTotalExpense = view.findViewById(R.id.tvTotalExpense);
         btnLogout = view.findViewById(R.id.btnLogout);
+        btnEditProfile = view.findViewById(R.id.btnEditProfile);
 
         loadUserInfo();
         loadStatistics();
+
+        btnEditProfile.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), EditProfileActivity.class));
+        });
 
         btnLogout.setOnClickListener(v -> {
             TokenManager.clear();
@@ -48,6 +53,13 @@ public class ProfileFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserInfo();
+        loadStatistics();
     }
 
     private void loadUserInfo() {
