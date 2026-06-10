@@ -23,3 +23,11 @@ buildNumber.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Development docs and test files
+开发计划.md
+*开发总结.md
+*开发完成说明.md
+项目结构说明.md
+day*.md
+test-*.json
