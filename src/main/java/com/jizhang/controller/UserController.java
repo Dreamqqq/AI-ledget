@@ -1,6 +1,7 @@
 package com.jizhang.controller;
 
 import com.jizhang.common.Result;
+import com.jizhang.dto.StatisticsResponse;
 import com.jizhang.dto.UpdateProfileRequest;
 import com.jizhang.entity.User;
 import com.jizhang.enums.ErrorCode;
@@ -63,5 +64,13 @@ public class UserController {
         profile.put("gender", user.getGender());
         
         return Result.success("修改成功", profile);
+    }
+
+    @ApiOperation("获取记账统计")
+    @GetMapping("/statistics")
+    public Result<StatisticsResponse> getStatistics(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        StatisticsResponse statistics = userService.getStatistics(userId);
+        return Result.success(statistics);
     }
 }

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="用户名"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/tvUserPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="手机号"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="记账统计"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvTotalCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="记账次数: 0次"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvTotalIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="总收入: ¥0.00"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvTotalExpense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="总支出: ¥0.00"
+                android:textSize="14sp"
+                android:textColor="#666666" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="退出登录"
+            android:textSize="16sp"
+            android:backgroundTint="#F44336" />
+
+    </LinearLayout>
+</ScrollView>

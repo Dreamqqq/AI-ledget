@@ -5,14 +5,17 @@ import com.jizhang.dto.LoginRequest;
 import com.jizhang.dto.LoginResponse;
 import com.jizhang.dto.RegisterRequest;
 import com.jizhang.dto.RegisterResponse;
+import com.jizhang.dto.StatisticsResponse;
 import com.jizhang.dto.UpdateProfileRequest;
 import com.jizhang.entity.OperationLog;
 import com.jizhang.entity.User;
 import com.jizhang.enums.EntityType;
 import com.jizhang.enums.ErrorCode;
 import com.jizhang.enums.OperationType;
+import com.jizhang.enums.TransactionType;
 import com.jizhang.exception.BusinessException;
 import com.jizhang.repository.OperationLogRepository;
+import com.jizhang.repository.TransactionRepository;
 import com.jizhang.repository.UserRepository;
 import com.jizhang.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +35,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final OperationLogRepository operationLogRepository;
+    private final TransactionRepository transactionRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -106,6 +111,14 @@ public class UserService {
         } catch (Exception e) {
             log.error("操作日志记录失败", e);
         }
+    }
+
+    public StatisticsResponse getStatistics(Long userId) {
+        Long totalTransactions = transactionRepository.countByUserId(userId);
+        BigDecimal totalIncome = transactionRepository.sumAmountByUserIdAndType(userId, TransactionType.INCOME);
+        BigDecimal totalExpense = transactionRepository.sumAmountByUserIdAndType(userId, TransactionType.EXPENSE);
+        
+        return new StatisticsResponse(totalTransactions, totalIncome, totalExpense);
     }
 
     private Map<String, Object> buildUserMap(User user) {
