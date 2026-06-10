@@ -12,7 +12,7 @@ spring:
 
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://rm-bp1ism34k2e0l5d8j2o.mysql.rds.aliyuncs.com/jizhang?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2b8
+    url: jdbc:mysql://localhost:3306/jizhang?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
     username: root
     password: pjc16103
     hikari:
