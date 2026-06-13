@@ -1,101 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="#F4F6F9">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <LinearLayout
+        <!-- 个人信息卡片 -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#FFFFFF">
 
-            <TextView
-                android:id="@+id/tvUserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="用户名"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#333333" />
-
-            <TextView
-                android:id="@+id/tvUserPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="手机号"
-                android:textSize="14sp"
-                android:textColor="#999999"
-                android:layout_marginTop="8dp" />
-
-            <Button
-                android:id="@+id/btnEditProfile"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="编辑个人信息"
-                android:textSize="14sp"
-                android:layout_marginTop="12dp"
-                style="@android:style/Widget.Material.Button.Borderless" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="24dp">
 
-        <LinearLayout
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        app:tint="#4CAF50"
+                        android:scaleType="centerInside"
+                        android:layout_marginEnd="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvUserName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="用户名"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="#2D3142" />
+
+                        <TextView
+                            android:id="@+id/tvUserPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="手机号"
+                            android:textSize="15sp"
+                            android:textColor="#9094A6"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F0F2F5"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="12dp" />
+
+                <Button
+                    android:id="@+id/btnEditProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="40dp"
+                    android:text="编辑个人信息"
+                    android:textSize="14sp"
+                    android:textColor="#4CAF50"
+                    android:layout_gravity="center_horizontal"
+                    android:background="#00000000"
+                    style="@android:style/Widget.Material.Button.Borderless" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 记账统计卡片 -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#FFFFFF">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="记账统计"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_marginBottom="12dp" />
+                android:orientation="vertical"
+                android:padding="24dp">
 
-            <TextView
-                android:id="@+id/tvTotalCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="记账次数: 0次"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:layout_marginBottom="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="记账统计"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#2D3142"
+                    android:layout_marginBottom="20dp" />
 
-            <TextView
-                android:id="@+id/tvTotalIncome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="总收入: ¥0.00"
-                android:textSize="14sp"
-                android:textColor="#666666"
-                android:layout_marginBottom="8dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#F8F9FA"
+                    android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tvTotalExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="总支出: ¥0.00"
-                android:textSize="14sp"
-                android:textColor="#666666" />
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvTotalCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="记账次数: 0次"
+                        android:textSize="15sp"
+                        android:textColor="#4F566B"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvTotalIncome"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="总收入: ¥0.00"
+                        android:textSize="15sp"
+                        android:textColor="#4CAF50"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvTotalExpense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="总支出: ¥0.00"
+                        android:textSize="15sp"
+                        android:textColor="#F44336"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="54dp"
             android:text="退出登录"
             android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
             android:backgroundTint="#F44336" />
 
     </LinearLayout>

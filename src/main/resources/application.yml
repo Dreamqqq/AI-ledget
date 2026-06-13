@@ -2,9 +2,11 @@
 # 配置项目端口
 server:
   port: 8084
-
+  address: 0.0.0.0
 
 spring:
+  profiles:
+    active: local
 
   #配置项目返回时间的json格式
   jackson.date-format: yyyy-MM-dd HH:mm:ss

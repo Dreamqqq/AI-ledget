@@ -18,7 +18,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
-    private TextInputEditText etPhone, etPassword, etName, etAge, etOccupation;
+    private TextInputEditText etPhone, etPassword, etConfirmPassword, etName, etAge, etOccupation;
     private RadioGroup rgGender;
     private Button btnRegister;
     private TextView tvLogin;
@@ -30,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         etPhone = findViewById(R.id.etPhone);
         etPassword = findViewById(R.id.etPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         etName = findViewById(R.id.etName);
         etAge = findViewById(R.id.etAge);
         etOccupation = findViewById(R.id.etOccupation);
@@ -44,6 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void register() {
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
+        String confirmPassword = etConfirmPassword.getText().toString().trim();
         String name = etName.getText().toString().trim();
         String ageStr = etAge.getText().toString().trim();
         String occupation = etOccupation.getText().toString().trim();
@@ -55,6 +57,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if (TextUtils.isEmpty(password) || password.length() < 6) {
             Toast.makeText(this, "密码至少6位", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "两次输入的密码不一致", Toast.LENGTH_SHORT).show();
             return;
         }
         if (TextUtils.isEmpty(name)) {

@@ -121,6 +121,17 @@ public class UserService {
         return new StatisticsResponse(totalTransactions, totalIncome, totalExpense);
     }
 
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        
+        Map<String, Object> oldValue = buildUserMap(user);
+        logOperation(userId, OperationType.DELETE, EntityType.USER, userId, oldValue, null);
+        
+        userRepository.delete(user);
+    }
+
     private Map<String, Object> buildUserMap(User user) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", user.getName());

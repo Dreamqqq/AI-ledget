@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "http://10.0.2.2:8084/api/";
+    private static final String BASE_URL = "http://172.24.184.44:8084/api/";
     private static Retrofit retrofit;
 
     public static Retrofit getInstance() {

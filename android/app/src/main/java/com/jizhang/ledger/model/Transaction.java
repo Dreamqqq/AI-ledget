@@ -1,6 +1,8 @@
 package com.jizhang.ledger.model;
 
-public class Transaction {
+import java.io.Serializable;
+
+public class Transaction implements Serializable {
     private Long id;
     private String type;
     private String category;

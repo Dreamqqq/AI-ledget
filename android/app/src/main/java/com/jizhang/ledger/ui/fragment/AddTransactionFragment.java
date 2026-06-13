@@ -39,6 +39,9 @@ public class AddTransactionFragment extends Fragment {
     private Map<String, List<String>> categories;
     private List<String> currentCategories = new ArrayList<>();
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+    
+    private Transaction editingTransaction;
+    private boolean isEditMode = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +82,14 @@ public class AddTransactionFragment extends Fragment {
             cal.get(Calendar.DAY_OF_MONTH));
         btnSelectDate.setText(selectedDate);
 
+        if (getArguments() != null && getArguments().containsKey("transaction")) {
+            editingTransaction = (Transaction) getArguments().getSerializable("transaction");
+            if (editingTransaction != null) {
+                isEditMode = true;
+                btnSubmit.setText("更新账单");
+            }
+        }
+
         loadCategories();
 
         rgType.setOnCheckedChangeListener((group, checkedId) -> updateCategorySpinner());
@@ -99,6 +110,9 @@ public class AddTransactionFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     categories = response.body().getData();
                     updateCategorySpinner();
+                    if (isEditMode && editingTransaction != null) {
+                        fillFormWithTransaction();
+                    }
                 }
             }
 
@@ -107,6 +121,29 @@ public class AddTransactionFragment extends Fragment {
                 Toast.makeText(getContext(), "加载类目失败", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private void fillFormWithTransaction() {
+        if ("INCOME".equals(editingTransaction.getType())) {
+            rbIncome.setChecked(true);
+        } else {
+            rbExpense.setChecked(true);
+        }
+        updateCategorySpinner();
+        
+        etAmount.setText(String.valueOf(editingTransaction.getAmount()));
+        selectedDate = editingTransaction.getDate();
+        btnSelectDate.setText(selectedDate);
+        if (editingTransaction.getRemark() != null) {
+            etRemark.setText(editingTransaction.getRemark());
+        }
+        
+        if (currentCategories != null && editingTransaction.getCategory() != null) {
+            int position = currentCategories.indexOf(editingTransaction.getCategory());
+            if (position >= 0) {
+                spinnerCategory.setSelection(position);
+            }
+        }
     }
 
     private void updateCategorySpinner() {
@@ -163,22 +200,47 @@ public class AddTransactionFragment extends Fragment {
 
         TransactionRequest request = new TransactionRequest(type, category, amount, selectedDate, remark);
 
-        RetrofitClient.getApiService().createTransaction(request).enqueue(new Callback<ApiResponse<Transaction>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<Transaction>> call, Response<ApiResponse<Transaction>> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    Toast.makeText(getContext(), "添加成功", Toast.LENGTH_SHORT).show();
-                    clearForm();
-                } else {
-                    Toast.makeText(getContext(), "添加失败", Toast.LENGTH_SHORT).show();
+        if (isEditMode && editingTransaction != null) {
+            RetrofitClient.getApiService().updateTransaction(editingTransaction.getId(), request).enqueue(new Callback<ApiResponse<Transaction>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<Transaction>> call, Response<ApiResponse<Transaction>> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                        Toast.makeText(getContext(), "更新成功", Toast.LENGTH_SHORT).show();
+                        isEditMode = false;
+                        editingTransaction = null;
+                        btnSubmit.setText("添加账单");
+                        clearForm();
+                        if (getActivity() != null) {
+                            getActivity().getSupportFragmentManager().popBackStack();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "更新失败", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ApiResponse<Transaction>> call, Throwable t) {
-                Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<ApiResponse<Transaction>> call, Throwable t) {
+                    Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            RetrofitClient.getApiService().createTransaction(request).enqueue(new Callback<ApiResponse<Transaction>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<Transaction>> call, Response<ApiResponse<Transaction>> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                        Toast.makeText(getContext(), "添加成功", Toast.LENGTH_SHORT).show();
+                        clearForm();
+                    } else {
+                        Toast.makeText(getContext(), "添加失败", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<Transaction>> call, Throwable t) {
+                    Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void clearForm() {
@@ -194,7 +256,8 @@ public class AddTransactionFragment extends Fragment {
     }
 
     private void selectImage() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
         imagePickerLauncher.launch(intent);
     }
 
@@ -264,7 +327,17 @@ public class AddTransactionFragment extends Fragment {
 
     private void fillFormWithOcrData(OcrResponse ocrData) {
         if (ocrData.getAmount() != null) {
-            etAmount.setText(String.valueOf(ocrData.getAmount()));
+            double amount = ocrData.getAmount().doubleValue();
+            
+            if (amount < 0) {
+                rbExpense.setChecked(true);
+                etAmount.setText(String.valueOf(Math.abs(amount)));
+            } else {
+                rbIncome.setChecked(true);
+                etAmount.setText(String.valueOf(amount));
+            }
+            
+            updateCategorySpinner();
         }
         
         if (ocrData.getDate() != null && !ocrData.getDate().isEmpty()) {

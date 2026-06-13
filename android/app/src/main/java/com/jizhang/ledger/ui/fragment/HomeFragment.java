@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -56,6 +57,7 @@ public class HomeFragment extends Fragment {
         adapter.setOnItemClickListener(new TransactionAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Transaction transaction) {
+                editTransaction(transaction);
             }
 
             @Override
@@ -69,16 +71,36 @@ public class HomeFragment extends Fragment {
     }
 
     private void showMonthYearPicker() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(selectedYear, selectedMonth - 1, 1);
-
-        DatePickerDialog dialog = new DatePickerDialog(getContext(), (view, year, month, dayOfMonth) -> {
-            selectedYear = year;
-            selectedMonth = month + 1;
-            loadData();
-        }, selectedYear, selectedMonth - 1, 1);
+        View dialogView = LayoutInflater.from(getContext()).inflate(android.R.layout.select_dialog_item, null);
         
-        dialog.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("选择年月");
+        
+        final NumberPicker yearPicker = new NumberPicker(getContext());
+        yearPicker.setMinValue(2000);
+        yearPicker.setMaxValue(2100);
+        yearPicker.setValue(selectedYear);
+        
+        final NumberPicker monthPicker = new NumberPicker(getContext());
+        monthPicker.setMinValue(1);
+        monthPicker.setMaxValue(12);
+        monthPicker.setValue(selectedMonth);
+        monthPicker.setDisplayedValues(new String[]{"1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"});
+        
+        android.widget.LinearLayout layout = new android.widget.LinearLayout(getContext());
+        layout.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+        layout.setGravity(android.view.Gravity.CENTER);
+        layout.addView(yearPicker);
+        layout.addView(monthPicker);
+        
+        builder.setView(layout);
+        builder.setPositiveButton("确定", (dialog, which) -> {
+            selectedYear = yearPicker.getValue();
+            selectedMonth = monthPicker.getValue();
+            loadData();
+        });
+        builder.setNegativeButton("取消", null);
+        builder.show();
     }
 
     private void showDeleteDialog(Transaction transaction) {
@@ -94,6 +116,7 @@ public class HomeFragment extends Fragment {
         RetrofitClient.getApiService().deleteTransaction(id).enqueue(new Callback<ApiResponse<Void>>() {
             @Override
             public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(getContext(), "删除成功", Toast.LENGTH_SHORT).show();
                     loadData();
@@ -104,9 +127,23 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                if (!isAdded()) return;
                 Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private void editTransaction(Transaction transaction) {
+        AddTransactionFragment fragment = new AddTransactionFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("transaction", transaction);
+        fragment.setArguments(bundle);
+        
+        getActivity().getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .addToBackStack(null)
+            .commit();
     }
 
     private void loadData() {
@@ -115,6 +152,7 @@ public class HomeFragment extends Fragment {
         RetrofitClient.getApiService().getTransactions(selectedYear, selectedMonth).enqueue(new Callback<ApiResponse<TransactionListResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<TransactionListResponse>> call, Response<ApiResponse<TransactionListResponse>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     TransactionListResponse data = response.body().getData();
                     tvIncome.setText(String.format("¥%.2f", data.getTotalIncome()));
@@ -125,6 +163,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ApiResponse<TransactionListResponse>> call, Throwable t) {
+                if (!isAdded()) return;
                 Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
             }
         });

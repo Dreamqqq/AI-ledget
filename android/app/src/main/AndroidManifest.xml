@@ -11,7 +11,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="AI记账本"
         android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.Ledger">
         
         <activity
             android:name=".ui.LoginActivity"
@@ -25,6 +25,7 @@
         <activity android:name=".ui.RegisterActivity" />
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.EditProfileActivity" />
+        <activity android:name=".ui.PhotoPickerActivity" />
     </application>
 
 </manifest>
