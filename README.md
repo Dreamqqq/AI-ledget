@@ -178,17 +178,6 @@ mvn spring-boot:run
 
 详细 API 文档请访问 Swagger UI。
 
-## 🔧 测试
-
-项目包含多个测试脚本：
-
-```bash
-# API 测试
-.\test-api.ps1
-
-# 用户 CRUD 测试
-.\test-user-crud.ps1
-```
 
 ## 📱 Android 客户端
 
